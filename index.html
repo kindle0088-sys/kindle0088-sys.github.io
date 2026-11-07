@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet,max-image-preview:none,max-snippet:-1">
+<meta name="googlebot" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#070b14">
+<title>KLH · Hub</title>
+<style>
+:root{
+  --bg:#070b14; --bg2:#0b1220; --card:rgba(19,28,49,.72); --line:rgba(255,255,255,.08);
+  --line2:rgba(255,255,255,.16); --txt:#e8eefc; --dim:#8b9bb8; --dim2:#64748b;
+  --accent:#38bdf8; --accent2:#22d3ee; --danger:#f87171; --ok:#4ade80;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{
+  background:
+    radial-gradient(1100px 600px at 12% -10%, rgba(56,189,248,.14), transparent 62%),
+    radial-gradient(900px 520px at 92% 8%, rgba(34,211,238,.09), transparent 58%),
+    radial-gradient(800px 700px at 50% 115%, rgba(99,102,241,.10), transparent 62%),
+    var(--bg);
+  color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  line-height:1.55;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+[hidden]{display:none!important}
+a{color:inherit;text-decoration:none}
+button,input{font:inherit;color:inherit}
+
+/* ─────────── 解锁门 ─────────── */
+#gate{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:24px;z-index:10;
+}
+.gate-card{
+  width:100%;max-width:392px;
+  background:linear-gradient(180deg,rgba(24,34,58,.86),rgba(14,21,38,.92));
+  border:1px solid var(--line);border-radius:20px;
+  padding:34px 30px 28px;
+  box-shadow:0 28px 70px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.03) inset;
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  animation:rise .42s cubic-bezier(.22,1,.36,1);
+}
+@keyframes rise{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+.lockring{
+  width:52px;height:52px;border-radius:15px;display:grid;place-items:center;margin:0 auto 18px;
+  background:linear-gradient(145deg,rgba(56,189,248,.18),rgba(99,102,241,.14));
+  border:1px solid rgba(56,189,248,.28);
+  box-shadow:0 0 26px -6px rgba(56,189,248,.45);
+}
+.lockring svg{width:23px;height:23px;stroke:var(--accent);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.gate-card h1{font-size:19px;font-weight:650;letter-spacing:.2px;text-align:center}
+.gate-card .sub{font-size:12.5px;color:var(--dim);text-align:center;margin:6px 0 22px;letter-spacing:.3px}
+.pw-wrap{position:relative;margin-bottom:12px}
+.pw-wrap input{
+  width:100%;padding:13px 46px 13px 15px;
+  background:rgba(7,11,20,.72);border:1px solid var(--line2);border-radius:11px;
+  font-family:var(--mono);font-size:15px;letter-spacing:.6px;color:var(--txt);
+  outline:none;transition:border-color .18s,box-shadow .18s,background .18s;
+}
+.pw-wrap input::placeholder{color:var(--dim2);font-family:inherit;font-size:13.5px;letter-spacing:0}
+.pw-wrap input:focus{border-color:rgba(56,189,248,.62);box-shadow:0 0 0 3.5px rgba(56,189,248,.13);background:rgba(7,11,20,.92)}
+.pw-wrap input:disabled{opacity:.5;cursor:not-allowed}
+.eye{
+  position:absolute;right:6px;top:50%;transform:translateY(-50%);
+  width:34px;height:34px;display:grid;place-items:center;border:0;border-radius:8px;
+  background:transparent;cursor:pointer;color:var(--dim2);transition:color .15s,background .15s;
+}
+.eye:hover{color:var(--txt);background:rgba(255,255,255,.06)}
+.eye svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#go{
+  width:100%;padding:12px;border:1px solid rgba(56,189,248,.34);border-radius:11px;
+  background:linear-gradient(180deg,rgba(56,189,248,.24),rgba(56,189,248,.13));
+  color:#dff4ff;font-size:14px;font-weight:600;letter-spacing:.4px;cursor:pointer;
+  transition:filter .15s,transform .1s,opacity .15s;
+}
+#go:hover:not(:disabled){filter:brightness(1.16)}
+#go:active:not(:disabled){transform:translateY(1px)}
+#go:disabled{opacity:.55;cursor:not-allowed}
+.msg{
+  min-height:19px;margin-top:13px;font-size:12.5px;text-align:center;letter-spacing:.2px;
+  transition:color .2s;color:var(--dim);
+}
+.msg.err{color:var(--danger)}
+.msg.ok{color:var(--ok)}
+.msg small{display:block;margin-top:3px;color:var(--dim2);font-size:11.5px}
+.gate-foot{
+  display:flex;align-items:center;gap:7px;justify-content:center;
+  margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.05);
+  font-size:11px;color:var(--dim2);letter-spacing:.35px;
+}
+.dot{width:4px;height:4px;border-radius:50%;background:currentColor;opacity:.5}
+
+/* ─────────── 主界面 ─────────── */
+#app{max-width:1080px;margin:0 auto;padding:34px 22px 64px;animation:fade .4s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.brand{display:flex;align-items:baseline;gap:9px}
+.brand b{font-size:17px;font-weight:650;letter-spacing:.3px}
+.brand span{font-size:11.5px;color:var(--dim2);font-family:var(--mono);letter-spacing:.6px}
+.top-sp{flex:1}
+.searchbox{
+  position:relative;flex:0 1 300px;min-width:180px;
+}
+.searchbox svg{
+  position:absolute;left:11px;top:50%;transform:translateY(-50%);
+  width:15px;height:15px;stroke:var(--dim2);fill:none;stroke-width:2;stroke-linecap:round;
+  pointer-events:none;transition:stroke .15s;
+}
+.searchbox input{
+  width:100%;padding:9px 52px 9px 34px;
+  background:rgba(19,28,49,.66);border:1px solid var(--line);border-radius:10px;
+  font-size:13.5px;outline:none;transition:border-color .18s,box-shadow .18s,background .18s;
+}
+.searchbox input::placeholder{color:var(--dim2)}
+.searchbox input:focus{border-color:rgba(56,189,248,.5);box-shadow:0 0 0 3px rgba(56,189,248,.1);background:rgba(19,28,49,.9)}
+.searchbox:focus-within svg{stroke:var(--accent)}
+.kbd{
+  position:absolute;right:9px;top:50%;transform:translateY(-50%);
+  font-family:var(--mono);font-size:10.5px;color:var(--dim2);
+  padding:2px 6px;border:1px solid var(--line2);border-radius:5px;
+  background:rgba(7,11,20,.6);pointer-events:none;letter-spacing:.5px;
+}
+.iconbtn{
+  width:36px;height:36px;flex:0 0 auto;display:grid;place-items:center;
+  background:rgba(19,28,49,.66);border:1px solid var(--line);border-radius:10px;
+  cursor:pointer;color:var(--dim);transition:color .15s,border-color .15s,background .15s;
+}
+.iconbtn:hover{color:var(--txt);border-color:var(--line2);background:rgba(30,41,66,.8)}
+.iconbtn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(252px,1fr));gap:13px}
+.card{
+  position:relative;display:block;padding:17px 17px 15px;
+  background:var(--card);border:1px solid var(--line);border-radius:14px;
+  transition:transform .18s cubic-bezier(.22,1,.36,1),border-color .18s,background .18s,box-shadow .18s;
+  overflow:hidden;
+}
+.card::after{
+  content:"";position:absolute;inset:0;border-radius:14px;pointer-events:none;
+  background:radial-gradient(320px 130px at 88% -18%,rgba(56,189,248,.13),transparent 70%);
+  opacity:0;transition:opacity .22s;
+}
+.card:hover{transform:translateY(-3px);border-color:rgba(56,189,248,.36);background:rgba(24,34,58,.86);
+  box-shadow:0 16px 36px -18px rgba(0,0,0,.9),0 0 0 1px rgba(56,189,248,.1) inset}
+.card:hover::after{opacity:1}
+.card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.card .num{
+  position:absolute;right:13px;top:13px;
+  width:21px;height:21px;display:grid;place-items:center;border-radius:6px;
+  font-family:var(--mono);font-size:11px;font-weight:600;color:var(--dim2);
+  border:1px solid var(--line);background:rgba(7,11,20,.5);
+  transition:color .18s,border-color .18s,background .18s;
+}
+.card:hover .num{color:var(--accent);border-color:rgba(56,189,248,.4);background:rgba(56,189,248,.1)}
+.card .tag{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:10.5px;letter-spacing:.55px;color:var(--dim);text-transform:uppercase;
+  margin-bottom:9px;font-weight:600;
+}
+.card .tag i{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.85;font-style:normal}
+.card .name{font-size:14.5px;font-weight:620;letter-spacing:.15px;padding-right:26px;line-height:1.4}
+.card .desc{font-size:12.5px;color:var(--dim);margin-top:5px;line-height:1.6}
+.card .host{
+  font-family:var(--mono);font-size:10.5px;color:var(--dim2);
+  margin-top:11px;padding-top:10px;border-top:1px solid rgba(255,255,255,.05);
+  letter-spacing:.2px;word-break:break-all;
+}
+.card.last{box-shadow:0 0 0 1px rgba(74,222,128,.28) inset}
+.card.last .num{color:var(--ok);border-color:rgba(74,222,128,.34);background:rgba(74,222,128,.09)}
+.empty{
+  grid-column:1/-1;text-align:center;color:var(--dim2);font-size:13px;padding:44px 0;letter-spacing:.3px;
+}
+.foot{
+  margin-top:30px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;
+  font-size:11px;color:var(--dim2);letter-spacing:.3px;
+}
+.foot kbd{
+  font-family:var(--mono);font-size:10.5px;padding:1.5px 5px;border-radius:4px;
+  border:1px solid var(--line2);background:rgba(7,11,20,.55);color:var(--dim);
+}
+@media (max-width:620px){
+  #app{padding:22px 15px 48px}
+  .gate-card{padding:28px 22px 24px}
+  .grid{grid-template-columns:1fr;gap:11px}
+  .searchbox{flex:1 1 100%;order:3}
+  .top{gap:11px}
+}
+@media (hover:none),(pointer:coarse){
+  .foot .kb-hint{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .card:hover{transform:none}
+}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <form class="gate-card" id="gateForm" autocomplete="on">
+    <div class="lockring">
+      <svg viewBox="0 0 24 24"><rect x="4" y="10.5" width="16" height="10.5" rx="2.4"/><path d="M8 10.5V7.2a4 4 0 0 1 8 0v3.3"/><circle cx="12" cy="15.6" r="1.15" fill="currentColor" stroke="none"/></svg>
+    </div>
+    <h1>已加密的入口</h1>
+    <p class="sub">输入口令解锁</p>
+    <div class="pw-wrap">
+      <input id="pw" type="password" placeholder="口令" autocomplete="current-password"
+             autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="口令">
+      <button type="button" class="eye" id="eye" aria-label="显示口令">
+        <svg viewBox="0 0 24 24"><path d="M2.5 12S6 5.8 12 5.8 21.5 12 21.5 12 18 18.2 12 18.2 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="2.9"/></svg>
+      </button>
+    </div>
+    <button type="submit" id="go">解锁</button>
+    <div class="msg" id="msg"></div>
+    <div class="gate-foot">
+      <span>AES-GCM 256</span><span class="dot"></span><span>PBKDF2</span><span class="dot"></span><span>本地解密</span>
+    </div>
+  </form>
+</div>
+
+<main id="app" hidden>
+  <div class="top">
+    <div class="brand"><b>KLH</b><span>HUB</span></div>
+    <div class="top-sp"></div>
+    <div class="searchbox">
+      <svg viewBox="0 0 24 24"><circle cx="10.6" cy="10.6" r="6.4"/><path d="M15.4 15.4 20.5 20.5"/></svg>
+      <input id="q" type="search" placeholder="搜索站点 / 关键词" autocomplete="off" spellcheck="false" aria-label="搜索">
+      <span class="kbd">/</span>
+    </div>
+    <button class="iconbtn" id="lock" title="锁定" aria-label="锁定">
+      <svg viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="9.8" rx="2.2"/><path d="M8.2 10.5V7.4a3.8 3.8 0 0 1 7.6 0v3.1"/></svg>
+    </button>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="foot">
+    <span class="kb-hint">按 <kbd>1</kbd>–<kbd>9</kbd> 直达</span><span class="dot kb-hint"></span>
+    <span class="kb-hint"><kbd>/</kbd> 搜索</span><span class="dot kb-hint"></span>
+    <span class="kb-hint"><kbd>Esc</kbd> 清空</span><span class="dot kb-hint"></span>
+    <span>解锁状态保留 30 天</span><span class="dot"></span>
+    <span>构建 <span id="built">2026-11-07 18:18 SGT</span></span>
+  </div>
+</main>
+
+<script id="vault" type="application/json">{"v":1,"iter":250000,"salt":"b3USQgCIGtdJ6tSyjFXl3A==","iv":"jpRlcTvZRCXplerk","ct":"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"}</script>
+<script>
+(function(){
+  'use strict';
+
+  var V        = JSON.parse(document.getElementById('vault').textContent);
+  var gate     = document.getElementById('gate');
+  var app      = document.getElementById('app');
+  var form     = document.getElementById('gateForm');
+  var pwEl     = document.getElementById('pw');
+  var msgEl    = document.getElementById('msg');
+  var goBtn    = document.getElementById('go');
+  var gridEl   = document.getElementById('grid');
+  var qEl      = document.getElementById('q');
+
+  var K_KEY    = 'hub_k';        // 派生密钥（base64）
+  var K_TIME   = 'hub_t';        // 存密钥的时间戳
+  var K_LOCK   = 'hub_lock';     // 失败计数
+  var K_LAST   = 'hub_last';     // 上次访问
+  var TTL      = 30 * 24 * 3600 * 1000;
+  var MAX_FAIL = 5;
+  var FAIL_WAIT= 60 * 1000;
+
+  var enc = new TextEncoder();
+  var dec = new TextDecoder();
+  var busy = false;
+
+  /* ── 工具 ── */
+  function b64d(s){
+    var bin = atob(s), u = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+    return u;
+  }
+  function b64e(u){
+    var s = '';
+    for (var i = 0; i < u.length; i++) s += String.fromCharCode(u[i]);
+    return btoa(s);
+  }
+  function ls(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function lsSet(k, v){ try { localStorage.setItem(k, v); } catch(e){} }
+  function lsDel(k){ try { localStorage.removeItem(k); } catch(e){} }
+  function setMsg(t, kind, extra){
+    msgEl.className = 'msg' + (kind ? ' ' + kind : '');
+    msgEl.innerHTML = '';
+    msgEl.appendChild(document.createTextNode(t));
+    if (extra){ var s = document.createElement('small'); s.textContent = extra; msgEl.appendChild(s); }
+  }
+
+  /* ── 失败锁定 ── */
+  function getLock(){
+    try { var o = JSON.parse(ls(K_LOCK) || '{}'); return { n: o.n | 0, until: o.until | 0 }; }
+    catch(e){ return { n: 0, until: 0 }; }
+  }
+  function setLock(o){ lsSet(K_LOCK, JSON.stringify(o)); }
+  function lockLeft(){ var l = getLock(); return Math.max(0, l.until - Date.now()); }
+  function startCountdown(){
+    var t = setInterval(function(){
+      var left = lockLeft();
+      if (left <= 0){
+        clearInterval(t);
+        goBtn.disabled = false; pwEl.disabled = false;
+        setMsg('');
+        pwEl.focus();
+      } else {
+        setMsg('尝试次数过多，请等待 ' + Math.ceil(left / 1000) + ' 秒');
+      }
+    }, 500);
+  }
+
+  /* ── 密码学 ── */
+  function deriveBits(pw){
+    return crypto.subtle.importKey('raw', enc.encode(pw), 'PBKDF2', false, ['deriveBits'])
+      .then(function(base){
+        return crypto.subtle.deriveBits(
+          { name: 'PBKDF2', salt: b64d(V.salt), iterations: V.iter, hash: 'SHA-256' },
+          base, 256);
+      })
+      .then(function(bits){ return new Uint8Array(bits); });
+  }
+  function decryptWith(rawKey){
+    return crypto.subtle.importKey('raw', rawKey, { name: 'AES-GCM' }, false, ['decrypt'])
+      .then(function(key){
+        return crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64d(V.iv) }, key, b64d(V.ct));
+      })
+      .then(function(pt){ return JSON.parse(dec.decode(pt)); });
+  }
+
+  /* ── 渲染 ── */
+  function render(data){
+    var last = ls(K_LAST) || '';
+    gridEl.innerHTML = '';
+    data.sites.forEach(function(s, i){
+      var a = document.createElement('a');
+      a.className = 'card' + (s.url === last ? ' last' : '');
+      a.href = s.url;
+      a.dataset.k = String(i + 1);
+      a.dataset.search = [s.name, s.desc, s.tag, (s.kw || []).join(' '), s.url]
+        .join(' ').toLowerCase();
+
+      var num = document.createElement('span');
+      num.className = 'num'; num.textContent = String(i + 1);
+
+      var tag = document.createElement('div');
+      tag.className = 'tag';
+      tag.innerHTML = '<i></i>';
+      tag.appendChild(document.createTextNode(s.tag));
+
+      var nm = document.createElement('div');
+      nm.className = 'name'; nm.textContent = s.name;
+
+      var ds = document.createElement('div');
+      ds.className = 'desc'; ds.textContent = s.desc;
+
+      var ho = document.createElement('div');
+      ho.className = 'host';
+      ho.textContent = s.url.replace(/^https:\/\/[^\/]+/, '') || '/';
+
+      a.appendChild(num); a.appendChild(tag); a.appendChild(nm);
+      a.appendChild(ds); a.appendChild(ho);
+
+      a.addEventListener('click', function(){ lsSet(K_LAST, s.url); });
+      gridEl.appendChild(a);
+    });
+
+    if (!gridEl.children.length){
+      var e = document.createElement('div');
+      e.className = 'empty'; e.textContent = '解密成功但内容为空';
+      gridEl.appendChild(e);
+    }
+
+    gate.hidden = true;
+    app.hidden = false;
+    // 刻意不自动聚焦搜索框：否则 1–8 会被当成输入数字，快捷键失效。
+    // 需要搜索时按 "/" 或 Tab 即可。
+  }
+
+  function doUnlock(pw){
+    if (busy) return;
+    busy = true;
+    goBtn.disabled = true; pwEl.disabled = true;
+    setMsg('正在解密…');
+
+    deriveBits(pw)
+      .then(function(raw){
+        return decryptWith(raw).then(function(data){
+          return { raw: raw, data: data };
+        });
+      })
+      .then(function(r){
+        busy = false; goBtn.disabled = false; pwEl.disabled = false;
+        setLock({ n: 0, until: 0 });
+        pwEl.value = '';
+        setMsg('');
+        lsSet(K_KEY, b64e(r.raw));
+        lsSet(K_TIME, String(Date.now()));
+        render(r.data);
+      })
+      .catch(function(){
+        busy = false; goBtn.disabled = false; pwEl.disabled = false;
+        var l = getLock();
+        l.n++;
+        if (l.n >= MAX_FAIL){
+          l.n = 0; l.until = Date.now() + FAIL_WAIT;
+          setLock(l);
+          goBtn.disabled = true; pwEl.disabled = true;
+          setMsg('口令错误 ' + MAX_FAIL + ' 次，已锁定 ' + Math.round(FAIL_WAIT / 1000) + ' 秒');
+          startCountdown();
+        } else {
+          setLock(l);
+          setMsg('口令错误', 'err', '还剩 ' + (MAX_FAIL - l.n) + ' 次机会');
+          pwEl.select();
+        }
+        pwEl.focus();
+      });
+  }
+
+  /* ── 自动解锁（存的是派生密钥，不再跑 PBKDF2） ── */
+  function autoUnlock(){
+    var k = ls(K_KEY), t = parseInt(ls(K_TIME) || '0', 10);
+    if (!k) return false;
+    if (!t || Date.now() - t > TTL){ lsDel(K_KEY); lsDel(K_TIME); return false; }
+    var raw;
+    try { raw = b64d(k); } catch(e){ return false; }
+    if (raw.length !== 32) return false;
+
+    decryptWith(raw).then(function(data){
+      setLock({ n: 0, until: 0 });
+      setMsg('');
+      lsSet(K_TIME, String(Date.now()));   // 滑动续期
+      render(data);
+    }).catch(function(){
+      lsDel(K_KEY); lsDel(K_TIME);
+      setMsg('会话已失效，请重新输入口令');
+      pwEl.focus();
+    });
+    return true;
+  }
+
+  /* ── 事件 ── */
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    if (lockLeft() > 0) return;
+    var pw = pwEl.value;
+    if (!pw) { setMsg('请输入口令', 'err'); pwEl.focus(); return; }
+    doUnlock(pw);
+  });
+
+  document.getElementById('eye').addEventListener('click', function(){
+    var show = pwEl.type === 'password';
+    pwEl.type = show ? 'text' : 'password';
+    pwEl.focus();
+    this.setAttribute('aria-label', show ? '隐藏口令' : '显示口令');
+  });
+
+  document.getElementById('lock').addEventListener('click', function(){
+    lsDel(K_KEY); lsDel(K_TIME);
+    app.hidden = true; gate.hidden = false;
+    pwEl.value = ''; pwEl.type = 'password';
+    setMsg('已锁定');
+    setTimeout(function(){ pwEl.focus(); }, 60);
+  });
+
+  qEl.addEventListener('input', function(){
+    var q = qEl.value.trim().toLowerCase();
+    var shown = 0;
+    Array.prototype.forEach.call(gridEl.children, function(c){
+      if (!c.dataset.search) return;
+      var hit = !q || c.dataset.search.indexOf(q) > -1;
+      c.hidden = !hit;
+      if (hit) shown++;
+    });
+    var old = gridEl.querySelector('.empty');
+    if (old) old.remove();
+    if (!shown){
+      var e = document.createElement('div');
+      e.className = 'empty';
+      e.textContent = '没有匹配「' + qEl.value.trim() + '」的站点';
+      gridEl.appendChild(e);
+    }
+  });
+
+  qEl.addEventListener('keydown', function(e){
+    if (e.key === 'Enter'){
+      var first = Array.prototype.find.call(gridEl.children, function(c){
+        return c.dataset.search && !c.hidden;
+      });
+      if (first){ lsSet(K_LAST, first.getAttribute('href')); location.href = first.href; }
+    }
+  });
+
+  document.addEventListener('keydown', function(e){
+    var tag = (document.activeElement || {}).tagName;
+    var typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+
+    if (app.hidden){
+      if (e.key === 'Escape') { pwEl.value = ''; }
+      return;
+    }
+
+    if (e.key === '/' && !typing){ e.preventDefault(); qEl.focus(); qEl.select(); return; }
+
+    if (e.key === 'Escape'){
+      if (typing){ qEl.value = ''; qEl.blur(); qEl.dispatchEvent(new Event('input')); }
+      return;
+    }
+
+    if (typing) return;
+
+    if (/^[1-9]$/.test(e.key)){
+      var card = gridEl.querySelector('.card[data-k="' + e.key + '"]');
+      if (card && !card.hidden){
+        e.preventDefault();
+        lsSet(K_LAST, card.getAttribute('href'));
+        location.href = card.href;
+      }
+    }
+  });
+
+  /* ── 启动 ── */
+  setMsg('');
+  var left = lockLeft();
+  if (left > 0){
+    goBtn.disabled = true; pwEl.disabled = true;
+    setMsg('尝试次数过多，请等待 ' + Math.ceil(left / 1000) + ' 秒');
+    startCountdown();
+  } else if (!autoUnlock()){
+    pwEl.focus();
+  }
+})();
+</script>
+</body>
+</html>

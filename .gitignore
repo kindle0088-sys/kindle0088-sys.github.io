@@ -1,0 +1,17 @@
+# 仓库只提交 index.html + robots.txt
+#
+# 为什么要这么严：这是客户端加密的私人站点入口（AES-GCM-256 + PBKDF2），
+# 口令与盐一旦进 git 历史，就算后来删除也永久留在对象里（GitHub 上是公开仓库）。
+# 模板与构建脚本里有站点清单明文，同样只在本地。
+.passwd
+.salt
+hub-template.html
+build-hub.cjs
+.tmp/
+# README 写的是本地运维细节（口令长度、轮换流程），也留在本地
+README.md
+
+# 编辑器 / 系统噪音
+.DS_Store
+Thumbs.db
+*.swp
